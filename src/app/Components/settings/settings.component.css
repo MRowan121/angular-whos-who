@@ -1,0 +1,18 @@
+div {
+  display: flex;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+}
+
+h3 {
+  text-align: center;
+  align-self: center;
+  padding: 0 10px;
+}
+
+button {
+  height: 30px;
+  width: 30px;
+  cursor: pointer;
+}

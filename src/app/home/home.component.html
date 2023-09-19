@@ -1,10 +1,21 @@
 <div *ngIf="authLoading || configLoading">Loading...</div>
-<div *ngIf="!authLoading && !configLoading">
-  Genre:
-  <select [(ngModel)]="selectedGenre" (ngModelChange)="setGenre($event)">
-    <option [value]=""></option>
-    <option [value]="genre" *ngFor="let genre of genres">
-      {{ genre }}
-    </option>
-  </select>
+<div *ngIf="!authLoading && !configLoading" class="home-screen">
+  <div class="settings-container">
+    <h3>Genre:</h3>
+    <select [(ngModel)]="selectedGenre" (ngModelChange)="setGenre($event)">
+      <option [value]=""></option>
+      <option [value]="genre" *ngFor="let genre of genres">
+        {{ genre }}
+      </option>
+    </select>
+  </div>
+  <app-settings
+    *ngFor="let setting of settings"
+    name="{{ setting.name }}"
+    [amount]="setting.amount"
+    [max]="setting.max"
+    (incrementProductByName)="increment(setting.name)"
+    (decrementProductByName)="decrement(setting.name)"
+  ></app-settings>
+  <button>Start Game</button>
 </div>
