@@ -20,6 +20,10 @@ interface Setting {
   styleUrls: ["./home.component.css"],
 })
 export class HomeComponent implements OnInit {
+  game: any = {
+    rounds: [],
+    incorrectSongs: []
+  }
   settings: Setting[] = [
     {
       name: "Number of Rounds: ",
@@ -106,4 +110,21 @@ export class HomeComponent implements OnInit {
       });
     }
   }
+
+  createSearch(){
+    const randomIndex = Math.floor(Math.random() * 200)
+    const query = "search?query=genre%3A" + this.selectedGenre + "&type=track&locale=en-US%2Cen%3Bq%3D0.9&offset" + randomIndex + "&limit=1"
+    return query
+  }
+
+  async createGame(t: any): Promise<any>{
+    
+    const response = await fetchFromSpotify({
+      token: t,
+      endpoint: this.createSearch(),
+    });
+    console.log(response);
+  }
 }
+
+

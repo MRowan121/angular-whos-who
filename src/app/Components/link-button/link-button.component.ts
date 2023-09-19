@@ -9,12 +9,17 @@ import { RouterLink } from "@angular/router";
 export class LinkButtonComponent {
   @Input() linkText: string;
   @Input() text: string;
+  // @Input() createGame: (param: any) => any;
   constructor() {
     this.linkText = "";
     this.text = "";
+    // this.createGame = 
   }
 
   navigateTo(text: string) {
     // route to the text
   }
+
+
+  
 }

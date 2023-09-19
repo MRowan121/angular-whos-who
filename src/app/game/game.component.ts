@@ -7,9 +7,27 @@ import { Component, OnInit } from '@angular/core';
 })
 export class GameComponent implements OnInit {
 
+  // interface answer{
+  //   name: "";
+  //   artist: "";
+  // }
+    
+
   constructor() { }
 
   ngOnInit(): void {
   }
 
+  // const answers [
+  //   {
+      
+  //   }
+    
+
+
+    
+    
+
+  
+  
 }
