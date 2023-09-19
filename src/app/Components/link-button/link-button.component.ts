@@ -1,15 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from "@angular/core";
+import { RouterLink } from "@angular/router";
 
 @Component({
-  selector: 'app-link-button',
-  templateUrl: './link-button.component.html',
-  styleUrls: ['./link-button.component.css']
+  selector: "app-link-button",
+  templateUrl: "./link-button.component.html",
+  styleUrls: ["./link-button.component.css"],
 })
-export class LinkButtonComponent implements OnInit {
-
-  constructor() { }
-
-  ngOnInit(): void {
+export class LinkButtonComponent {
+  @Input() linkText: string;
+  @Input() text: string;
+  constructor() {
+    this.linkText = "";
+    this.text = "";
   }
 
+  navigateTo(text: string) {
+    // route to the text
+  }
 }
