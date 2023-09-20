@@ -116,7 +116,7 @@ export class HomeComponent implements OnInit {
     const query =
       "search?query=genre%3A" +
       this.selectedGenre +
-      "&type=track&locale=en-US%2Cen%3Bq%3D0.9&offset" +
+      "&type=track&locale=en-US%2Cen%3Bq%3D0.9&offset=" +
       randomIndex +
       "&limit=1";
     return query;
