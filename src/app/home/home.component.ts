@@ -14,6 +14,18 @@ interface Setting {
   max: number;
 }
 
+interface Track {
+  trackName: string;
+  trackPreview: string;
+}
+
+interface Artist {
+  artistId: string;
+  artistName: string;
+  artistImage: string;
+  artistTracks: Track[];
+}
+
 @Component({
   selector: "app-home",
   templateUrl: "./home.component.html",
@@ -22,13 +34,13 @@ interface Setting {
 export class HomeComponent implements OnInit {
   settings: Setting[] = [
     {
-      name: "Number of Rounds: ",
+      name: "Songs per Guess: ",
       amount: 1,
       min: 1,
       max: 3,
     },
     {
-      name: "Options per Round: ",
+      name: "Artists per Guess: ",
       amount: 2,
       min: 2,
       max: 4,
@@ -41,6 +53,7 @@ export class HomeComponent implements OnInit {
   authLoading: boolean = false;
   configLoading: boolean = false;
   token: String = "";
+  artistArray: Artist[] = [];
 
   ngOnInit(): void {
     this.authLoading = true;
@@ -105,5 +118,70 @@ export class HomeComponent implements OnInit {
         }
       });
     }
+  }
+
+  createSearch() {
+    const query =
+      "search?query=genre%3A" +
+      this.selectedGenre +
+      "&type=artist&locale=en-US%2Cen%3Bq%3D0.9&limit=50";
+    return query;
+  }
+
+  shuffleArray(array: Artist[]) {
+    array.sort(() => 0.5 - Math.random());
+  }
+
+  fetchArtists = async (t: any) => {
+    const response = await fetchFromSpotify({
+      token: t,
+      endpoint: this.createSearch(),
+    });
+    this.artistArray = response.artists.items.map((artist: any) => {
+      return {
+        artistId: artist.id,
+        artistName: artist.name,
+        artistImage: artist?.images[0].url,
+        artistTracks: [],
+      };
+    });
+  };
+
+  fetchTracks = async (t: any) => {
+    for (const artist of this.artistArray) {
+      const response = await fetchFromSpotify({
+        token: t,
+        endpoint: `artists/${artist.artistId}/top-tracks?market=US`,
+      });
+      artist.artistTracks = response.tracks
+        .map((track: any) => {
+          return {
+            trackName: track.name,
+            trackPreview: track.preview_url,
+          };
+        })
+        .filter((obj: any) => obj.trackPreview !== null);
+    }
+    this.validateArtists();
+  };
+
+  validateArtists() {
+    this.artistArray = this.artistArray.filter(
+      (artist) => artist.artistTracks.length >= 3
+    );
+  }
+
+  createGame = async (t: any) => {
+    await this.fetchArtists(t);
+    await this.fetchTracks(t);
+    this.shuffleArray(this.artistArray);
+    console.log(this.artistArray.slice(0, this.settings[1].amount));
+    const gameArray = this.artistArray.slice(0, this.settings[1].amount);
+    return gameArray;
+  };
+
+  goToGame() {
+    this.createGame(this.token);
+    this.router.navigate(["/game"]);
   }
 }
