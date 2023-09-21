@@ -2,6 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import fetchFromSpotify, { request } from "../../services/api";
 import { Router } from "@angular/router";
 import { set } from "lodash";
+import { GameService } from "src/services/game.service";
 
 const AUTH_ENDPOINT =
   "https://nuod0t2zoe.execute-api.us-east-2.amazonaws.com/FT-Classroom/spotify-auth-token";
@@ -14,12 +15,12 @@ interface Setting {
   max: number;
 }
 
-interface Track {
+export interface Track {
   trackName: string;
   trackPreview: string;
 }
 
-interface Artist {
+export interface Artist {
   artistId: string;
   artistName: string;
   artistImage: string;
@@ -46,7 +47,7 @@ export class HomeComponent implements OnInit {
       max: 4,
     },
   ];
-  constructor(private router: Router) {}
+  constructor(private gameData: GameService, private router: Router) {}
 
   genres: String[] = ["House", "Alternative", "J-Rock", "R&B"];
   selectedGenre: String = "";
@@ -128,7 +129,9 @@ export class HomeComponent implements OnInit {
     return query;
   }
 
-  shuffleArray(array: Artist[]) {
+  /* The parameter is a union type so that the function can 
+  correctly shuffle artistTracks in addition to artists */
+  shuffleArray(array: Artist[] | Track[]) {
     array.sort(() => 0.5 - Math.random());
   }
 
@@ -161,6 +164,7 @@ export class HomeComponent implements OnInit {
           };
         })
         .filter((obj: any) => obj.trackPreview !== null);
+      this.shuffleArray(artist.artistTracks);
     }
     this.validateArtists();
   };
@@ -171,17 +175,23 @@ export class HomeComponent implements OnInit {
     );
   }
 
+  updateGameService() {
+    let numOfArtists = this.settings[1].amount;
+    this.gameData.updateSelectedGenre(this.selectedGenre);
+    this.gameData.updateArtistsArray(this.artistArray.slice(0, numOfArtists));
+    this.gameData.updateTotalSongs(this.settings[0].amount);
+    this.gameData.updateTotalArtists(numOfArtists);
+  }
+
   createGame = async (t: any) => {
     await this.fetchArtists(t);
     await this.fetchTracks(t);
     this.shuffleArray(this.artistArray);
-    console.log(this.artistArray.slice(0, this.settings[1].amount));
-    const gameArray = this.artistArray.slice(0, this.settings[1].amount);
-    return gameArray;
+    this.updateGameService();
   };
 
-  goToGame() {
-    this.createGame(this.token);
+  async goToGame() {
+    await this.createGame(this.token);
     this.router.navigate(["/game"]);
   }
 }
