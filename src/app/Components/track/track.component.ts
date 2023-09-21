@@ -2,6 +2,7 @@ import { Component, Input, Output, OnInit, EventEmitter } from "@angular/core";
 import { faPlay } from "@fortawesome/free-solid-svg-icons";
 import { Track } from "src/app/home/home.component";
 
+
 @Component({
   selector: "app-track",
   templateUrl: "./track.component.html",
