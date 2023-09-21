@@ -1,1 +1,13 @@
+<!-- <div *ngFor="let song of selectedSongs; let i = index">
+  <app-track></app-track>
+</div> -->
+
+<div *ngFor="let track of selectedSongs; let i = index">
+  <app-track
+    [track]="track"
+    [isActive]="i === activeTrackIndex"
+    [index]="i"
+    (trackClicked)="toggleActive(i)"
+  ></app-track>
+</div>
 <button (click)="goHome()">Go Home</button>

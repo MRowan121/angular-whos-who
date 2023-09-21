@@ -1,0 +1,47 @@
+.track-container {
+  border: 1px solid black;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  width: 25%;
+  padding: 5px;
+}
+.container {
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  padding: 2rem;
+  background: #efeeee;
+  border-radius: 50%;
+  transition: all 0.3s ease-in;
+  box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.1),
+    -10px -10px 10px rgba(255, 255, 255, 0.6);
+}
+.container .fas {
+  display: grid;
+  place-items: center;
+  font-size: 2rem;
+  color: gray;
+}
+
+.track-container:active .container {
+  box-shadow: inset 10px 10px 10px rgba(0, 0, 0, 0.1),
+    inset -10px -10px 10px rgba(255, 255, 255, 0.6);
+}
+.track-container:active .container .fas {
+  color: #721efa;
+}
+.track-container:active {
+  color: #721efa;
+}
+
+.track-container.active {
+  box-shadow: inset 10px 10px 10px rgba(0, 0, 0, 0.1),
+    inset -10px -10px 10px rgba(255, 255, 255, 0.6);
+}
+.track-container.active .container .fas {
+  color: #721efa;
+}
+.track-container.active {
+  color: #721efa;
+}

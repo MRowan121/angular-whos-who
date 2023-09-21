@@ -1,7 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { Router } from "@angular/router";
 import { GameService } from "src/services/game.service";
-import { Artist } from "../home/home.component";
+import { Artist, Track } from "../home/home.component";
 
 @Component({
   selector: "app-game",
@@ -13,6 +13,9 @@ export class GameComponent implements OnInit {
   gameArray: Artist[] = [];
   numOfSongs: number = 0;
   numOfArtists: number = 0;
+  selectedSongs: Track[] = [];
+  correctAnswer: string = "";
+  activeTrackIndex: number | null = null;
 
   constructor(private gameData: GameService, private router: Router) {}
 
@@ -27,10 +30,21 @@ export class GameComponent implements OnInit {
     this.gameData.totalArtists.subscribe(
       (number) => (this.numOfArtists = number)
     );
-    console.log("Genre: " + this.selectedGenre);
-    console.log("Game Array: ", this.gameArray);
-    console.log("Num of Songs: " + this.numOfSongs);
-    console.log("Num of Artists: " + this.numOfArtists);
+    // Creating the data that will populate play buttons below.
+    this.selectedSongs = this.gameArray[0].artistTracks.slice(
+      0,
+      this.numOfSongs
+    );
+    this.correctAnswer = this.gameArray[0].artistName;
+    this.activeTrackIndex = -1;
+  }
+
+  toggleActive(index: number) {
+    if (this.activeTrackIndex === index) {
+      this.activeTrackIndex = -1;
+    } else {
+      this.activeTrackIndex = index;
+    }
   }
 
   goHome() {
