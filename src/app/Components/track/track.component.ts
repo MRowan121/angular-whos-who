@@ -1,7 +1,7 @@
 import { Component, Input, Output, OnInit, EventEmitter } from "@angular/core";
 import { faPlay } from "@fortawesome/free-solid-svg-icons";
 import { Track } from "src/app/home/home.component";
-import { Howl } from 'howler';
+import { Howl, Howler } from "howler";
 
 @Component({
   selector: "app-track",
@@ -15,37 +15,25 @@ export class TrackComponent implements OnInit {
   @Output() trackClicked = new EventEmitter<void>();
 
   private sound: Howl | undefined = undefined;
- 
+  faPlay = faPlay;
 
-
-  constructor() {
-
-   
-
-  }
+  constructor() {}
 
   ngOnInit(): void {
-
     this.sound = new Howl({
-      src: [this.track.trackPreview], // Replace with your audio file path
+      src: [this.track.trackPreview],
       html5: true,
-    volume: 0.5
+      volume: 0.5,
     });
-
   }
-
-  faPlay = faPlay;
 
   onClick() {
     this.trackClicked.emit();
-    console.log(this.track.trackPreview)
-    console.log(this.sound)
-    if(this.sound?.playing()){
-      this.sound.pause()
-    }else{
-      this.sound?.play()
+    if (this.sound?.playing()) {
+      this.sound.stop();
+    } else {
+      Howler.stop();
+      this.sound?.play();
     }
-    
-
   }
 }
