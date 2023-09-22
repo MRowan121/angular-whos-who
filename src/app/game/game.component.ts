@@ -1,7 +1,8 @@
 import { Component, OnInit } from "@angular/core";
 import { Router } from "@angular/router";
 import { GameService } from "src/services/game.service";
-import { Artist } from "../home/home.component";
+import { Artist, Track } from "../home/home.component";
+import { Howler } from "howler";
 
 @Component({
   selector: "app-game",
@@ -9,17 +10,19 @@ import { Artist } from "../home/home.component";
   styleUrls: ["./game.component.css"],
 })
 export class GameComponent implements OnInit {
-  selectedGenre: String = "";
   gameArray: Artist[] = [];
   numOfSongs: number = 0;
   numOfArtists: number = 0;
+  selectedSongs: Track[] = [];
+  correctAnswer: string = "";
+  activeTrackIndex: number | null = null;
+  gameOver: boolean = false;
+  winner: boolean = false;
+  clickable: boolean = true;
 
   constructor(private gameData: GameService, private router: Router) {}
 
   ngOnInit() {
-    this.gameData.selectedGenre.subscribe(
-      (genre) => (this.selectedGenre = genre)
-    );
     this.gameData.artistsArray.subscribe(
       (artists) => (this.gameArray = artists)
     );
@@ -27,13 +30,25 @@ export class GameComponent implements OnInit {
     this.gameData.totalArtists.subscribe(
       (number) => (this.numOfArtists = number)
     );
-    console.log("Genre: " + this.selectedGenre);
-    console.log("Game Array: ", this.gameArray);
-    console.log("Num of Songs: " + this.numOfSongs);
-    console.log("Num of Artists: " + this.numOfArtists);
+    this.selectedSongs = this.gameArray[0].artistTracks.slice(
+      0,
+      this.numOfSongs
+    );
+    this.correctAnswer = this.gameArray[0].artistName;
+  }
+
+  toggleActive(index: number) {
+    this.activeTrackIndex = this.activeTrackIndex === index ? null : index;
+  }
+
+  checkCorrectArtist(artist: Artist) {
+    this.gameOver = true;
+    this.clickable = false;
+    this.winner = artist.artistName === this.correctAnswer ? true : false;
   }
 
   goHome() {
+    Howler.stop();
     this.router.navigate(["/"]);
   }
 }

@@ -1,0 +1,52 @@
+.track {
+  border: 1px solid black;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  margin: 0 10px;
+  padding: 5px;
+}
+.icon-container {
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  padding: 2rem;
+  background: #efeeee;
+  border-radius: 50%;
+  transition: all 0.3s ease-in;
+  box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.1),
+    -10px -10px 10px rgba(255, 255, 255, 0.6);
+}
+.icon-container .fas {
+  display: grid;
+  place-items: center;
+  font-size: 2rem;
+  color: gray;
+}
+
+.track:active .icon-container {
+  box-shadow: inset 10px 10px 10px rgba(0, 0, 0, 0.1),
+    inset -10px -10px 10px rgba(255, 255, 255, 0.6);
+}
+.track:active .icon-container .fas {
+  color: #721efa;
+}
+.track:active {
+  color: #721efa;
+}
+
+.track.active {
+  box-shadow: inset 10px 10px 10px rgba(0, 0, 0, 0.1),
+    inset -10px -10px 10px rgba(255, 255, 255, 0.6);
+}
+.track.active .icon-container .fas {
+  color: #721efa;
+}
+.track.active {
+  color: #721efa;
+}
+
+h2 {
+  padding: 0 15px;
+  font-family: fantasy;
+}

@@ -1,1 +1,33 @@
-<button (click)="goHome()">Go Home</button>
+<div class="game-screen">
+  <div class="track-container">
+    <app-track
+      *ngFor="let track of selectedSongs; let i = index"
+      [track]="track"
+      [isActive]="i === activeTrackIndex"
+      [index]="i"
+      (trackClicked)="toggleActive(i)"
+    ></app-track>
+  </div>
+
+  <div class="artist-container">
+    <div
+      [ngClass]="{ disabled: !clickable }"
+      (click)="clickable && checkCorrectArtist(artist)"
+      *ngFor="let artist of gameArray"
+      class="artist-card"
+    >
+      <img
+        [src]="artist.artistImage"
+        [alt]="artist.artistName"
+        class="artist-image"
+      />
+      <h4 class="artist-name">{{ artist.artistName }}</h4>
+    </div>
+  </div>
+  <div *ngIf="gameOver">
+    <h2 *ngIf="winner">Winner</h2>
+    <h2 *ngIf="!winner">Loser</h2>
+  </div>
+  <!-- Conditionally render this play again button after an artist selection has been made by the user -->
+  <button *ngIf="gameOver" (click)="goHome()">Play Again</button>
+</div>

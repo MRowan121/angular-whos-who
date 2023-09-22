@@ -3,6 +3,7 @@ import fetchFromSpotify, { request } from "../../services/api";
 import { Router } from "@angular/router";
 import { set } from "lodash";
 import { GameService } from "src/services/game.service";
+import { sampleData } from "../sampledata";
 
 const AUTH_ENDPOINT =
   "https://nuod0t2zoe.execute-api.us-east-2.amazonaws.com/FT-Classroom/spotify-auth-token";
@@ -14,6 +15,8 @@ interface Setting {
   min: number;
   max: number;
 }
+
+
 
 export interface Track {
   trackName: string;
@@ -47,6 +50,7 @@ export class HomeComponent implements OnInit {
       max: 4,
     },
   ];
+  
   constructor(private gameData: GameService, private router: Router) {}
 
   genres: String[] = ["House", "Alternative", "J-Rock", "R&B"];
@@ -55,9 +59,18 @@ export class HomeComponent implements OnInit {
   configLoading: boolean = false;
   token: String = "";
   artistArray: Artist[] = [];
+  numofSongs: number = 1;
+  
 
-  ngOnInit(): void {
-    this.authLoading = true;
+  ngOnInit(): void {  
+    const savedUserSettings = localStorage.getItem("userSettings");
+    if (savedUserSettings) {
+      let userSettings = JSON.parse(savedUserSettings);
+      this.selectedGenre = userSettings.genre;
+      this.settings[0].amount = userSettings.songs;
+      this.settings[1].amount = userSettings.artists;
+    }
+   this.authLoading = true;
     const storedTokenString = localStorage.getItem(TOKEN_KEY);
     if (storedTokenString) {
       const storedToken = JSON.parse(storedTokenString);
@@ -95,6 +108,7 @@ export class HomeComponent implements OnInit {
 
   setGenre(selectedGenre: any) {
     this.selectedGenre = selectedGenre;
+    localStorage.setItem('genre', selectedGenre)
     console.log(this.selectedGenre);
     console.log(TOKEN_KEY);
   }
@@ -192,6 +206,15 @@ export class HomeComponent implements OnInit {
 
   async goToGame() {
     await this.createGame(this.token);
+    const config = {
+      genre: this.selectedGenre,
+      songs: this.settings[0].amount,
+      artists: this.settings[1].amount,
+      totalArtists: this.artistArray.length
+    };
+    localStorage.setItem("userSettings", JSON.stringify(config));
     this.router.navigate(["/game"]);
   }
+
+
 }
