@@ -63,29 +63,6 @@ export class HomeComponent implements OnInit {
   
 
   ngOnInit(): void {  
-   // this.authLoading = true;
-    // const storedTokenString = localStorage.getItem(TOKEN_KEY);
-    // if (storedTokenString) {
-    //   const storedToken = JSON.parse(storedTokenString);
-    //   if (storedToken.expiration > Date.now()) {
-    //     console.log("Token found in localstorage");
-    //     this.authLoading = false;
-    //     this.token = storedToken.value;
-    //     this.loadGenres(storedToken.value);
-    //     return;
-    //   }
-    // }
-    // console.log("Sending request to AWS endpoint");
-    // request(AUTH_ENDPOINT).then(({ access_token, expires_in }) => {
-    //   const newToken = {
-    //     value: access_token,
-    //     expiration: Date.now() + (expires_in - 20) * 1000,
-    //   };
-    //   localStorage.setItem(TOKEN_KEY, JSON.stringify(newToken));
-    //   this.authLoading = false;
-    //   this.token = newToken.value;
-    //   this.loadGenres(newToken.value);
-    // });
     const savedUserSettings = localStorage.getItem("userSettings");
     if (savedUserSettings) {
       let userSettings = JSON.parse(savedUserSettings);
@@ -93,6 +70,29 @@ export class HomeComponent implements OnInit {
       this.settings[0].amount = userSettings.songs;
       this.settings[1].amount = userSettings.artists;
     }
+   this.authLoading = true;
+    const storedTokenString = localStorage.getItem(TOKEN_KEY);
+    if (storedTokenString) {
+      const storedToken = JSON.parse(storedTokenString);
+      if (storedToken.expiration > Date.now()) {
+        console.log("Token found in localstorage");
+        this.authLoading = false;
+        this.token = storedToken.value;
+        this.loadGenres(storedToken.value);
+        return;
+      }
+    }
+    console.log("Sending request to AWS endpoint");
+    request(AUTH_ENDPOINT).then(({ access_token, expires_in }) => {
+      const newToken = {
+        value: access_token,
+        expiration: Date.now() + (expires_in - 20) * 1000,
+      };
+      localStorage.setItem(TOKEN_KEY, JSON.stringify(newToken));
+      this.authLoading = false;
+      this.token = newToken.value;
+      this.loadGenres(newToken.value);
+    });
   }
 
   loadGenres = async (t: any) => {
@@ -192,19 +192,14 @@ export class HomeComponent implements OnInit {
   updateGameService() {
     let numOfArtists = this.settings[1].amount;
     this.gameData.updateSelectedGenre(this.selectedGenre);
-
-    // Commenting this line out and plugging in sampleData until apiCall issue is resolved
-    // this.gameData.updateArtistsArray(this.artistArray.slice(0, numOfArtists));
-
-    this.gameData.updateArtistsArray(sampleData);
+    this.gameData.updateArtistsArray(this.artistArray.slice(0, numOfArtists));
     this.gameData.updateTotalSongs(this.settings[0].amount);
     this.gameData.updateTotalArtists(numOfArtists);
   }
 
   createGame = async (t: any) => {
-    // Commenting this line out and plugging in sampleData until apiCall issue is resolved
-    // await this.fetchArtists(t);
-    // await this.fetchTracks(t);
+    await this.fetchArtists(t);
+    await this.fetchTracks(t);
     this.shuffleArray(this.artistArray);
     this.updateGameService();
   };
@@ -215,7 +210,7 @@ export class HomeComponent implements OnInit {
       genre: this.selectedGenre,
       songs: this.settings[0].amount,
       artists: this.settings[1].amount,
-      totalArtists: this.artistArray
+      totalArtists: this.artistArray.length
     };
     localStorage.setItem("userSettings", JSON.stringify(config));
     this.router.navigate(["/game"]);
