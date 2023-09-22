@@ -16,10 +16,17 @@ export class GameComponent implements OnInit {
   selectedSongs: Track[] = [];
   correctAnswer: string = "";
   activeTrackIndex: number | null = null;
+  numberOfClicks: number = 0;
+  maxClicks: number = this.numOfArtists-1;
+  gameOver: boolean = false;
+  winner: boolean = false;
+  clickable: boolean = true;
 
   constructor(private gameData: GameService, private router: Router) {}
 
   ngOnInit() {
+
+  
     this.gameData.selectedGenre.subscribe(
       (genre) => (this.selectedGenre = genre)
     );
@@ -50,4 +57,26 @@ export class GameComponent implements OnInit {
   goHome() {
     this.router.navigate(["/"]);
   }
+
+
+
+  checkCorrectArtist(artist: Artist){
+    console.log(artist.artistName)
+    console.log(this.correctAnswer)
+    console.log(artist.artistName === this.correctAnswer)
+    if(artist.artistName === this.correctAnswer){
+      this.gameOver = true;
+           this.winner = true;
+           this.clickable = false;
+    }else{
+      this.gameOver = true;
+      this.clickable = false;
+    }
+    // if(this.numberOfClicks = this.maxClicks){
+    //   this.gameOver = true;
+    // }
+  }
+  
+
+  
 }

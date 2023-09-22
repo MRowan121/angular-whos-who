@@ -3,6 +3,7 @@ import fetchFromSpotify, { request } from "../../services/api";
 import { Router } from "@angular/router";
 import { set } from "lodash";
 import { GameService } from "src/services/game.service";
+import { sampleData } from "../sampledata";
 
 const AUTH_ENDPOINT =
   "https://nuod0t2zoe.execute-api.us-east-2.amazonaws.com/FT-Classroom/spotify-auth-token";
@@ -14,6 +15,8 @@ interface Setting {
   min: number;
   max: number;
 }
+
+
 
 export interface Track {
   trackName: string;
@@ -47,6 +50,7 @@ export class HomeComponent implements OnInit {
       max: 4,
     },
   ];
+  
   constructor(private gameData: GameService, private router: Router) {}
 
   genres: String[] = ["House", "Alternative", "J-Rock", "R&B"];
@@ -55,31 +59,40 @@ export class HomeComponent implements OnInit {
   configLoading: boolean = false;
   token: String = "";
   artistArray: Artist[] = [];
+  numofSongs: number = 1;
+  
 
-  ngOnInit(): void {
-    this.authLoading = true;
-    const storedTokenString = localStorage.getItem(TOKEN_KEY);
-    if (storedTokenString) {
-      const storedToken = JSON.parse(storedTokenString);
-      if (storedToken.expiration > Date.now()) {
-        console.log("Token found in localstorage");
-        this.authLoading = false;
-        this.token = storedToken.value;
-        this.loadGenres(storedToken.value);
-        return;
-      }
+  ngOnInit(): void {  
+   // this.authLoading = true;
+    // const storedTokenString = localStorage.getItem(TOKEN_KEY);
+    // if (storedTokenString) {
+    //   const storedToken = JSON.parse(storedTokenString);
+    //   if (storedToken.expiration > Date.now()) {
+    //     console.log("Token found in localstorage");
+    //     this.authLoading = false;
+    //     this.token = storedToken.value;
+    //     this.loadGenres(storedToken.value);
+    //     return;
+    //   }
+    // }
+    // console.log("Sending request to AWS endpoint");
+    // request(AUTH_ENDPOINT).then(({ access_token, expires_in }) => {
+    //   const newToken = {
+    //     value: access_token,
+    //     expiration: Date.now() + (expires_in - 20) * 1000,
+    //   };
+    //   localStorage.setItem(TOKEN_KEY, JSON.stringify(newToken));
+    //   this.authLoading = false;
+    //   this.token = newToken.value;
+    //   this.loadGenres(newToken.value);
+    // });
+    const savedUserSettings = localStorage.getItem("userSettings");
+    if (savedUserSettings) {
+      let userSettings = JSON.parse(savedUserSettings);
+      this.selectedGenre = userSettings.genre;
+      this.settings[0].amount = userSettings.songs;
+      this.settings[1].amount = userSettings.artists;
     }
-    console.log("Sending request to AWS endpoint");
-    request(AUTH_ENDPOINT).then(({ access_token, expires_in }) => {
-      const newToken = {
-        value: access_token,
-        expiration: Date.now() + (expires_in - 20) * 1000,
-      };
-      localStorage.setItem(TOKEN_KEY, JSON.stringify(newToken));
-      this.authLoading = false;
-      this.token = newToken.value;
-      this.loadGenres(newToken.value);
-    });
   }
 
   loadGenres = async (t: any) => {
@@ -95,6 +108,7 @@ export class HomeComponent implements OnInit {
 
   setGenre(selectedGenre: any) {
     this.selectedGenre = selectedGenre;
+    localStorage.setItem('genre', selectedGenre)
     console.log(this.selectedGenre);
     console.log(TOKEN_KEY);
   }
@@ -178,20 +192,34 @@ export class HomeComponent implements OnInit {
   updateGameService() {
     let numOfArtists = this.settings[1].amount;
     this.gameData.updateSelectedGenre(this.selectedGenre);
-    this.gameData.updateArtistsArray(this.artistArray.slice(0, numOfArtists));
+
+    // Commenting this line out and plugging in sampleData until apiCall issue is resolved
+    // this.gameData.updateArtistsArray(this.artistArray.slice(0, numOfArtists));
+
+    this.gameData.updateArtistsArray(sampleData);
     this.gameData.updateTotalSongs(this.settings[0].amount);
     this.gameData.updateTotalArtists(numOfArtists);
   }
 
   createGame = async (t: any) => {
-    await this.fetchArtists(t);
-    await this.fetchTracks(t);
+    // Commenting this line out and plugging in sampleData until apiCall issue is resolved
+    // await this.fetchArtists(t);
+    // await this.fetchTracks(t);
     this.shuffleArray(this.artistArray);
     this.updateGameService();
   };
 
   async goToGame() {
     await this.createGame(this.token);
+    const config = {
+      genre: this.selectedGenre,
+      songs: this.settings[0].amount,
+      artists: this.settings[1].amount,
+      totalArtists: this.artistArray
+    };
+    localStorage.setItem("userSettings", JSON.stringify(config));
     this.router.navigate(["/game"]);
   }
+
+
 }

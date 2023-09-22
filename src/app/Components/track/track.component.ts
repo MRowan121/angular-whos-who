@@ -15,7 +15,7 @@ export class TrackComponent implements OnInit {
   @Output() trackClicked = new EventEmitter<void>();
 
   private sound: Howl | undefined = undefined;
-  private isPlaying: boolean = false;
+ 
 
 
   constructor() {
